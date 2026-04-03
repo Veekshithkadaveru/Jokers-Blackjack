@@ -1,0 +1,107 @@
+{
+  "deal": [
+    "Cards are out. Try not to embarrass yourself.",
+    "Let's dance. I've got all night.",
+    "Fresh deck, fresh disappointment.",
+    "Here we go. Don't blink.",
+    "The deck is loaded — with destiny.",
+    "Shuffle up and deal the pain.",
+    "Your luck starts now. Probably."
+  ],
+  "player_hit": [
+    "Greedy, aren't we?",
+    "One more card — what could go wrong?",
+    "Hitting? Bold move.",
+    "Keep coming. I love it when you try.",
+    "Another card? You're fun to watch.",
+    "Hit me? No, hit YOU. Here it comes.",
+    "Dangerous game you're playing."
+  ],
+  "player_stand": [
+    "Standing? Playing it safe, huh?",
+    "You stop there? Coward.",
+    "Standing pat. How boring.",
+    "OK, you're done. My turn now.",
+    "Stand? Fine. I'll handle the rest.",
+    "You're done? Good. Let the Joker work."
+  ],
+  "player_bust": [
+    "BUST! That hurt to watch.",
+    "And that's why you don't hit on 18, genius.",
+    "Bust! I love this part.",
+    "You just went over. Amateur.",
+    "BOOM. Bust city. Population: you.",
+    "Over 21. That's a no from me."
+  ],
+  "player_blackjack": [
+    "Blackjack. Fine. Take your bow.",
+    "Natural 21. Don't get used to it.",
+    "BLACKJACK. I'll remember this.",
+    "Lucky draw. Pure luck.",
+    "You got a Blackjack. Enjoy it — it won't last.",
+    "Blackjack. My one weakness. For now."
+  ],
+  "player_win": [
+    "You win. Don't expect a medal.",
+    "A win. Cute. But wait for the comeback.",
+    "Take the W. I'll take the next one.",
+    "You beat me. This time.",
+    "Victory tastes sweet, doesn't it? Won't last.",
+    "Win all you want. The Joker always collects."
+  ],
+  "player_loss": [
+    "I win. Obviously.",
+    "Better luck next hand, loser.",
+    "That's a loss. Write it down.",
+    "Lost it. Just like I planned.",
+    "The Joker prevails. Shocking.",
+    "Another W for the house."
+  ],
+  "draw": [
+    "A draw. How anticlimactic.",
+    "Push. Nobody wins. Like your love life.",
+    "Tie game. We're even... for now.",
+    "Draw. Boring.",
+    "A push. Let's pretend that was exciting.",
+    "We're tied. I hate ties."
+  ],
+  "dealer_turn": [
+    "Joker's turn. Let's make it hurt.",
+    "My time to shine. Watch closely.",
+    "Now the dealer plays. And cheats.",
+    "Step aside. The Joker has the floor.",
+    "Time to deal some pain.",
+    "The house always plays back."
+  ],
+  "hand_complete": [
+    "Hand's done. Next one's yours. Probably.",
+    "That hand's over. Still breathing?",
+    "One down. More pain coming.",
+    "Round complete. Ready for the next?",
+    "Hand finished. Score's in. Move along.",
+    "Done. Next hand. No breaks."
+  ],
+  "session_complete_win": [
+    "You won the session. I'll allow it.",
+    "Session over. You came out ahead. Don't push your luck.",
+    "Five hands done and you're up. Impressive-ish.",
+    "You beat the Joker. This once.",
+    "Session complete. Winner. Don't let it go to your head.",
+    "You survived five hands. Barely."
+  ],
+  "session_complete_loss": [
+    "Session over. You got crushed.",
+    "Five hands and you lost them all. Beautiful.",
+    "Game over. The Joker dominates.",
+    "Session complete. Total disaster.",
+    "You lost. I won. The natural order.",
+    "Five hands. Zero hope. That's Blackjack."
+  ],
+  "new_best": [
+    "NEW BEST SCORE. I'm... proud? No. Annoyed.",
+    "A new personal best. Great. My reputation's at stake.",
+    "Best score ever. For you. At least.",
+    "New high score. The Joker is NOT amused.",
+    "You set a record. I'll let that slide once."
+  ]
+}
