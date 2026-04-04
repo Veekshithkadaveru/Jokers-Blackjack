@@ -84,19 +84,24 @@ fun HandDisplay(
 
         Spacer(Modifier.height(6.dp))
 
-        val displayedTotal = if (isDealer && !isRevealed) null else total.toString()
         val totalColor = when {
             isBust -> Color(0xFFEF5350)
             isBlackjack -> Color(0xFFFFD700)
             else -> Color.White
         }
-        displayedTotal?.let {
+        val totalText = when {
+            isDealer && !isRevealed && cards.size >= 2 -> {
+                val upcardValue = cards[1].value
+                "Showing: $upcardValue"
+            }
+            isDealer && !isRevealed -> null
+            isBlackjack -> "BLACKJACK!"
+            isBust -> "Bust! ($total)"
+            else -> "Total: $total"
+        }
+        totalText?.let {
             Text(
-                text = when {
-                    isBlackjack -> "BLACKJACK!"
-                    isBust -> "Bust! ($it)"
-                    else -> "Total: $it"
-                },
+                text = it,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.Serif,

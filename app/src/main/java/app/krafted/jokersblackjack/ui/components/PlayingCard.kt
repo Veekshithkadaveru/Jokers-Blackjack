@@ -37,11 +37,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,15 +52,18 @@ import app.krafted.jokersblackjack.game.Card
 import app.krafted.jokersblackjack.game.Rank
 import app.krafted.jokersblackjack.game.Suit
 
-private val backDrawables = listOf(
-    R.drawable.jok014_sym_1,
-    R.drawable.jok014_sym_2,
-    R.drawable.jok014_sym_3,
-    R.drawable.jok014_sym_4,
-    R.drawable.jok014_sym_5,
-    R.drawable.jok014_sym_6,
-    R.drawable.jok014_sym_7
-)
+fun getCardDrawable(context: android.content.Context, card: Card): Int {
+    val suitStr = card.suit.name.lowercase()
+    val rankStr = when (card.rank) {
+        Rank.JACK -> "j"
+        Rank.QUEEN -> "q"
+        Rank.KING -> "k"
+        Rank.ACE -> "a"
+        else -> card.rank.value.toString()
+    }
+    val resName = "card_${suitStr}_${rankStr}"
+    return context.resources.getIdentifier(resName, "drawable", context.packageName)
+}
 
 private data class PipPos(val col: Int, val row: Int, val flipped: Boolean = false)
 
@@ -134,8 +139,8 @@ fun PlayingCard(
     backIndex: Int = 0,
     isBlackjack: Boolean = false
 ) {
-    val flipProgress = remember { Animatable(0f) }
-    var isShowingBack by remember { mutableStateOf(!isRevealed) }
+    val flipProgress = remember { Animatable(if (isRevealed) 1f else 0f) }
+    var showingBack by remember { mutableStateOf(!isRevealed) }
 
     val slideY = remember { Animatable(-800f) }
     LaunchedEffect(Unit) {
@@ -146,23 +151,23 @@ fun PlayingCard(
     }
 
     LaunchedEffect(isRevealed) {
-        if (isRevealed && isShowingBack) {
+        if (isRevealed && showingBack) {
             flipProgress.animateTo(0.5f, tween(150))
-            isShowingBack = false
+            showingBack = false
             flipProgress.animateTo(1f, tween(150))
-        } else if (!isRevealed && !isShowingBack) {
+        } else if (!isRevealed && !showingBack) {
             flipProgress.animateTo(0.5f, tween(150))
-            isShowingBack = true
+            showingBack = true
             flipProgress.animateTo(1f, tween(150))
         }
     }
 
-    val isCurrentlyShowingBack = flipProgress.value < 0.5f || isShowingBack
+    val context = LocalContext.current
 
     val infiniteTransition = rememberInfiniteTransition(label = "blackjack_shimmer")
     val shimmerAlpha by infiniteTransition.animateFloat(
         initialValue = 0f,
-        targetValue = if (isBlackjack && !isCurrentlyShowingBack) 0.55f else 0f,
+        targetValue = if (isBlackjack && !showingBack) 0.55f else 0f,
         animationSpec = infiniteRepeatable(
             animation = tween(500, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
@@ -187,9 +192,9 @@ fun PlayingCard(
                 },
             contentAlignment = Alignment.Center
         ) {
-            if (isCurrentlyShowingBack) {
+            if (showingBack) {
                 Image(
-                    painter = painterResource(id = backDrawables[(backIndex % backDrawables.size)]),
+                    painter = painterResource(id = R.drawable.card_back_joker),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
@@ -197,10 +202,22 @@ fun PlayingCard(
                         .clip(RoundedCornerShape(8.dp))
                 )
             } else {
-                CardFace(card = card)
+                val drawableId = getCardDrawable(context, card)
+                if (drawableId != 0) {
+                    Image(
+                        painter = painterResource(id = drawableId),
+                        contentDescription = "Card Face",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(3.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                } else {
+                    CardFace(card = card)
+                }
             }
 
-            if (isBlackjack && !isCurrentlyShowingBack) {
+            if (isBlackjack && !showingBack) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -223,11 +240,18 @@ private fun CardFace(card: Card) {
     val color = if (isRed) Color(0xFFCC1111) else Color(0xFF111111)
     val isFaceCard = card.rank in listOf(Rank.JACK, Rank.QUEEN, Rank.KING)
 
+    val cardGradient = Brush.linearGradient(
+        colors = listOf(Color(0xFFFFFFFF), Color(0xFFF0F0F5)),
+    )
+    val borderGradient = Brush.linearGradient(
+        colors = listOf(Color(0xFFD4AF37), Color(0xFFAA7C11), Color(0xFFE2C252))
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-            .border(1.dp, Color(0xFFDDDDDD), RoundedCornerShape(10.dp))
+            .background(cardGradient)
+            .border(1.5.dp, borderGradient, RoundedCornerShape(10.dp))
             .padding(5.dp)
     ) {
         Column(
@@ -238,11 +262,11 @@ private fun CardFace(card: Card) {
                 text = card.rank.displayName,
                 color = color,
                 fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.ExtraBold,
+                fontFamily = FontFamily.Serif,
                 lineHeight = 16.sp
             )
-            Text(text = suitSymbol, color = color, fontSize = 12.sp, lineHeight = 13.sp)
+            Text(text = suitSymbol, color = color, fontSize = 13.sp, lineHeight = 13.sp)
         }
 
         Column(
@@ -255,31 +279,32 @@ private fun CardFace(card: Card) {
                 text = card.rank.displayName,
                 color = color,
                 fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.ExtraBold,
+                fontFamily = FontFamily.Serif,
                 lineHeight = 16.sp
             )
-            Text(text = suitSymbol, color = color, fontSize = 12.sp, lineHeight = 13.sp)
+            Text(text = suitSymbol, color = color, fontSize = 13.sp, lineHeight = 13.sp)
         }
 
         if (isFaceCard) {
             Text(
                 text = suitSymbol,
-                color = color.copy(alpha = 0.07f),
-                fontSize = 90.sp,
+                color = color.copy(alpha = 0.05f),
+                fontSize = 100.sp,
                 modifier = Modifier.align(Alignment.Center)
             )
             Box(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(color.copy(alpha = 0.08f))
-                    .padding(horizontal = 10.dp, vertical = 14.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Brush.radialGradient(listOf(color.copy(alpha = 0.15f), Color.Transparent)))
+                    .border(1.dp, color.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                    .padding(horizontal = 14.dp, vertical = 18.dp)
             ) {
                 Text(
                     text = card.rank.displayName,
                     color = color,
-                    fontSize = 44.sp,
+                    fontSize = 48.sp,
                     fontWeight = FontWeight.Black,
                     fontFamily = FontFamily.Serif,
                     textAlign = TextAlign.Center

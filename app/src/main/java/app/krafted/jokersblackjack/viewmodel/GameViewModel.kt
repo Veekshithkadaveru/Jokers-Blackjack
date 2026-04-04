@@ -6,7 +6,18 @@ import androidx.lifecycle.viewModelScope
 import app.krafted.jokersblackjack.data.QuoteRepository
 import app.krafted.jokersblackjack.data.db.AppDatabase
 import app.krafted.jokersblackjack.data.db.SessionRecord
-import app.krafted.jokersblackjack.game.*
+import app.krafted.jokersblackjack.game.BlackjackEngine
+import app.krafted.jokersblackjack.game.Card
+import app.krafted.jokersblackjack.game.DealerAI
+import app.krafted.jokersblackjack.game.DealerAction
+import app.krafted.jokersblackjack.game.Difficulty
+import app.krafted.jokersblackjack.game.GamePhase
+import app.krafted.jokersblackjack.game.GameUiState
+import app.krafted.jokersblackjack.game.HandResult
+import app.krafted.jokersblackjack.game.buildDeck
+import app.krafted.jokersblackjack.game.dealCard
+import app.krafted.jokersblackjack.game.handTotal
+import app.krafted.jokersblackjack.game.shuffleDeck
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -97,7 +108,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         if (engine.checkBust(newPlayerHand)) {
-            completeHand(HandResult.BUST, newPlayerHand, state.dealerHand)
+            viewModelScope.launch {
+                completeHand(HandResult.BUST, newPlayerHand, state.dealerHand)
+            }
         }
     }
 
@@ -152,11 +165,12 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun completeHand(
+    private suspend fun completeHand(
         result: HandResult,
         playerHand: List<Card>,
         dealerHand: List<Card>
     ) {
+        delay(1800)
         val state = _uiState.value
         val points = engine.calculatePoints(result)
         val eventKey = when (result) {
@@ -192,7 +206,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         val nextHandNumber = state.sessionHandNumber + 1
-        val deck = state.deck.toMutableList().also { if (it.size < 20) { it.addAll(buildDeck()); it.shuffleDeck() } }
+        val deck = state.deck.toMutableList().also {
+            if (it.size < 20) {
+                it.addAll(buildDeck()); it.shuffleDeck()
+            }
+        }
         val (playerHand, dealerHand) = engine.dealInitialHands(deck)
         val playerTotal = handTotal(playerHand)
         val dealerTotal = handTotal(dealerHand)
@@ -241,7 +259,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
 
-            val eventKey = if (state.sessionScore > 5) "session_complete_win" else "session_complete_loss"
+            val eventKey =
+                if (state.sessionScore > 5) "session_complete_win" else "session_complete_loss"
             val quote = quoteRepository.getRandomQuote(eventKey)
 
             _uiState.update {
@@ -254,6 +273,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
             loadBestScores()
         }
+    }
+
+    fun resetSession() {
+        val currentDifficulty = _uiState.value.difficulty
+        startSession(currentDifficulty)
     }
 
     fun getBestScore(difficulty: Difficulty): Int {

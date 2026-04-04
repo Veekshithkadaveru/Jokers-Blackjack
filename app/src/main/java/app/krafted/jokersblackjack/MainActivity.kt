@@ -75,7 +75,14 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.SESSION_RESULT) { backStackEntry ->
                             val difficulty =
                                 backStackEntry.arguments?.getString("difficulty") ?: "EASY"
-                            SessionResultScreen(difficulty = difficulty)
+                            SessionResultScreen(
+                                difficulty = difficulty,
+                                onNavigateHome = {
+                                    navController.navigate(Screen.HOME) {
+                                        popUpTo(Screen.HOME) { inclusive = false }
+                                    }
+                                }
+                            )
                         }
                     }
                 }

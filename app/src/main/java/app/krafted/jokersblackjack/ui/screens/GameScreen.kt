@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -86,7 +87,9 @@ private val LossRed = Color(0xFFEF5350)
 fun GameScreen(
     difficulty: String,
     onNavigateToSessionResult: () -> Unit,
-    viewModel: GameViewModel = viewModel()
+    viewModel: GameViewModel = viewModel(
+        viewModelStoreOwner = LocalContext.current as androidx.activity.ComponentActivity
+    )
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -265,8 +268,8 @@ fun GameScreen(
                 sessionScore = uiState.sessionScore,
                 onNextHand = {
                     if (uiState.sessionHandNumber >= 5) {
-                        viewModel.nextHand()
                         onNavigateToSessionResult()
+                        viewModel.nextHand()
                     } else {
                         viewModel.nextHand()
                     }
@@ -294,17 +297,15 @@ private fun DealerSection(
     )
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        if (isDealerTurn) {
-            Text(
-                text = "JOKER'S HAND",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Serif,
-                letterSpacing = 3.sp,
-                color = Color.White.copy(alpha = 0.5f + dealerGlow * 0.5f)
-            )
-            Spacer(Modifier.height(8.dp))
-        }
+        Text(
+            text = "JOKER'S HAND",
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Serif,
+            letterSpacing = 3.sp,
+            color = Color.White.copy(alpha = if (isDealerTurn) 0.5f + dealerGlow * 0.5f else 0.6f)
+        )
+        Spacer(Modifier.height(8.dp))
 
         HandDisplay(
             cards = uiState.dealerHand,
@@ -313,7 +314,7 @@ private fun DealerSection(
             isDealer = true,
             isBust = uiState.dealerTotal > 21,
             isBlackjack = isDealerBlackjack,
-            label = if (isDealerTurn) null else "JOKER'S HAND"
+            label = null
         )
     }
 }
@@ -550,9 +551,11 @@ private fun SessionProgressBar(
             .height(28.dp),
         contentAlignment = Alignment.Center
     ) {
-        Canvas(modifier = Modifier
-            .fillMaxWidth()
-            .height(2.dp)) {
+        Canvas(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(2.dp)
+        ) {
             drawRoundRect(
                 color = Color.White.copy(alpha = 0.1f),
                 cornerRadius = CornerRadius(2f),
