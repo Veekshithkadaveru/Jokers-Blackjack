@@ -56,9 +56,7 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToGame = { difficulty ->
                                     navController.navigate(Screen.gameRoute(difficulty))
                                 },
-                                onNavigateToLeaderboard = {
-                                    navController.navigate(Screen.LEADERBOARD)
-                                }
+                                onNavigateToLeaderboard = {}
                             )
                         }
                         composable(Screen.LEADERBOARD) {
