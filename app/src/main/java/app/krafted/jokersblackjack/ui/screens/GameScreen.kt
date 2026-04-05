@@ -74,14 +74,12 @@ import app.krafted.jokersblackjack.game.HandResult
 import app.krafted.jokersblackjack.ui.HandResultOverlay
 import app.krafted.jokersblackjack.ui.components.HandDisplay
 import app.krafted.jokersblackjack.ui.components.JokerQuote
+import app.krafted.jokersblackjack.ui.theme.GoldAccent
+import app.krafted.jokersblackjack.ui.theme.LossRed
+import app.krafted.jokersblackjack.ui.theme.PurpleAccent
+import app.krafted.jokersblackjack.ui.theme.PurpleDeep
+import app.krafted.jokersblackjack.ui.theme.WinGreen
 import app.krafted.jokersblackjack.viewmodel.GameViewModel
-
-private val PurpleAccent = Color(0xFF5A1870)
-private val PurpleDeep = Color(0xFF2C0820)
-private val Parchment = Color(0xFFF0E8D0)
-private val GoldAccent = Color(0xFFFFD700)
-private val WinGreen = Color(0xFF4CAF50)
-private val LossRed = Color(0xFFEF5350)
 
 @Composable
 fun GameScreen(
@@ -100,6 +98,13 @@ fun GameScreen(
             Difficulty.EASY
         }
         viewModel.startSession(diff)
+    }
+
+    // Navigate when session completes (after completeSession finishes)
+    LaunchedEffect(uiState.isSessionComplete) {
+        if (uiState.isSessionComplete) {
+            onNavigateToSessionResult()
+        }
     }
 
     val showOverlay = uiState.gamePhase == GamePhase.HAND_COMPLETE && uiState.handResult != null
@@ -266,14 +271,7 @@ fun GameScreen(
                 difficulty = uiState.difficulty,
                 sessionResults = uiState.sessionResults,
                 sessionScore = uiState.sessionScore,
-                onNextHand = {
-                    if (uiState.sessionHandNumber >= 5) {
-                        onNavigateToSessionResult()
-                        viewModel.nextHand()
-                    } else {
-                        viewModel.nextHand()
-                    }
-                }
+                onNextHand = { viewModel.nextHand() }
             )
         }
     }
@@ -364,15 +362,6 @@ private fun PlayerSection(
 @Composable
 private fun PhaseIndicator(phase: GamePhase) {
     val pulseTransition = rememberInfiniteTransition(label = "phase_pulse")
-    val dotAlpha by pulseTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(500, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "phase_dot"
-    )
 
     val phaseText = when (phase) {
         GamePhase.DEALING -> "Dealing..."

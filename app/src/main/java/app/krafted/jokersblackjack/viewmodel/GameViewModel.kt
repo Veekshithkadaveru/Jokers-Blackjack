@@ -35,6 +35,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
+    private var sessionStarted = false
+
     init {
         loadBestScores()
     }
@@ -49,6 +51,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun startSession(difficulty: Difficulty) {
+        if (sessionStarted) return
+        sessionStarted = true
         viewModelScope.launch {
             val deck = buildDeck().also { it.shuffleDeck() }
             val (playerHand, dealerHand) = engine.dealInitialHands(deck)
@@ -276,6 +280,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun resetSession() {
+        sessionStarted = false
         val currentDifficulty = _uiState.value.difficulty
         startSession(currentDifficulty)
     }

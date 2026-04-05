@@ -63,22 +63,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.krafted.jokersblackjack.R
-import app.krafted.jokersblackjack.game.BlackjackEngine
 import app.krafted.jokersblackjack.game.Card
 import app.krafted.jokersblackjack.game.Difficulty
 import app.krafted.jokersblackjack.game.HandResult
 import app.krafted.jokersblackjack.game.Suit
 import app.krafted.jokersblackjack.game.handTotal
+import app.krafted.jokersblackjack.ui.theme.DarkText
+import app.krafted.jokersblackjack.ui.theme.GoldAccent
+import app.krafted.jokersblackjack.ui.theme.LossRed
+import app.krafted.jokersblackjack.ui.theme.Parchment
+import app.krafted.jokersblackjack.ui.theme.PurpleAccent
+import app.krafted.jokersblackjack.ui.theme.WinGreen
 import kotlinx.coroutines.delay
 import kotlin.math.sin
-
-private val engine = BlackjackEngine()
-private val ParchmentBg = Color(0xFFF0E8D0)
-private val PurpleBorder = Color(0xFF5A1870)
-private val DarkText = Color(0xFF1A0C04)
-private val WinGreen = Color(0xFF4CAF50)
-private val GoldAccent = Color(0xFFFFD700)
-private val LossRed = Color(0xFFEF5350)
 
 @Composable
 fun HandResultOverlay(
@@ -325,8 +322,8 @@ fun HandResultOverlay(
                     }
                     .shadow(8.dp, RoundedCornerShape(14.dp))
                     .clip(RoundedCornerShape(14.dp))
-                    .background(ParchmentBg)
-                    .border(3.dp, PurpleBorder, RoundedCornerShape(14.dp))
+                    .background(Parchment)
+                    .border(3.dp, PurpleAccent, RoundedCornerShape(14.dp))
                     .padding(horizontal = 20.dp, vertical = 18.dp)
             ) {
                 HandSummaryRow(
@@ -344,20 +341,20 @@ fun HandResultOverlay(
                         modifier = Modifier
                             .weight(1f)
                             .height(1.dp)
-                            .background(PurpleBorder.copy(alpha = 0.2f))
+                            .background(PurpleAccent.copy(alpha = 0.2f))
                     )
                     Box(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .size(6.dp)
                             .rotate(45f)
-                            .background(PurpleBorder.copy(alpha = 0.4f))
+                            .background(PurpleAccent.copy(alpha = 0.4f))
                     )
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .height(1.dp)
-                            .background(PurpleBorder.copy(alpha = 0.2f))
+                            .background(PurpleAccent.copy(alpha = 0.2f))
                     )
                 }
                 Spacer(Modifier.height(10.dp))
@@ -382,7 +379,7 @@ fun HandResultOverlay(
                     lineTo(0f, 0f)
                     close()
                 }
-                drawPath(path, color = PurpleBorder)
+                drawPath(path, color = PurpleAccent)
             }
 
             Column(
@@ -409,9 +406,9 @@ fun HandResultOverlay(
                             bottomEnd = 14.dp
                         )
                     )
-                    .background(ParchmentBg)
+                    .background(Parchment)
                     .border(
-                        3.dp, PurpleBorder,
+                        3.dp, PurpleAccent,
                         RoundedCornerShape(
                             topStart = 4.dp,
                             topEnd = 4.dp,
@@ -513,7 +510,6 @@ private fun BlackjackParticles() {
         particles.forEach { p ->
             val y = ((p.startY + time * p.speed) % 1.1f) * size.height
             val x = p.startX * size.width + sin((time + p.startY) * 6.28).toFloat() * 30f
-            val rotation = time * 360f * p.rotSpeed
             val alpha = 0.15f + sin((time + p.startX) * 3.14).toFloat() * 0.25f
 
             val diamond = Path().apply {
@@ -657,7 +653,7 @@ private fun HandSummaryRow(label: String, hand: List<Card>, textColor: Color, ac
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Serif,
             letterSpacing = 3.sp,
-            color = PurpleBorder
+            color = PurpleAccent
         )
         Spacer(Modifier.height(5.dp))
         Row(

@@ -55,8 +55,7 @@ class MainActivity : ComponentActivity() {
                             HomeScreen(
                                 onNavigateToGame = { difficulty ->
                                     navController.navigate(Screen.gameRoute(difficulty))
-                                },
-                                onNavigateToLeaderboard = {}
+                                }
                             )
                         }
                         composable(Screen.LEADERBOARD) {
@@ -76,10 +75,14 @@ class MainActivity : ComponentActivity() {
                             val difficulty =
                                 backStackEntry.arguments?.getString("difficulty") ?: "EASY"
                             SessionResultScreen(
-                                difficulty = difficulty,
                                 onNavigateHome = {
                                     navController.navigate(Screen.HOME) {
                                         popUpTo(Screen.HOME) { inclusive = false }
+                                    }
+                                },
+                                onPlayAgain = {
+                                    navController.navigate(Screen.gameRoute(difficulty)) {
+                                        popUpTo(Screen.HOME)
                                     }
                                 }
                             )

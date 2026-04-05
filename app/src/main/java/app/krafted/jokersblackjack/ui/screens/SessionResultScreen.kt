@@ -60,18 +60,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.krafted.jokersblackjack.R
 import app.krafted.jokersblackjack.game.Difficulty
 import app.krafted.jokersblackjack.game.HandResult
+import app.krafted.jokersblackjack.ui.theme.GoldAccent
+import app.krafted.jokersblackjack.ui.theme.LossRed
+import app.krafted.jokersblackjack.ui.theme.PurpleAccent
+import app.krafted.jokersblackjack.ui.theme.PurpleDeep
+import app.krafted.jokersblackjack.ui.theme.WinGreen
 import app.krafted.jokersblackjack.viewmodel.GameViewModel
-
-private val PurpleAccent = Color(0xFF5A1870)
-private val PurpleDeep = Color(0xFF2C0820)
-private val GoldAccent = Color(0xFFFFD700)
-private val WinGreen = Color(0xFF4CAF50)
-private val LossRed = Color(0xFFEF5350)
 
 @Composable
 fun SessionResultScreen(
-    difficulty: String,
     onNavigateHome: () -> Unit,
+    onPlayAgain: () -> Unit,
     viewModel: GameViewModel = viewModel(
         viewModelStoreOwner = LocalContext.current as androidx.activity.ComponentActivity
     )
@@ -88,12 +87,6 @@ fun SessionResultScreen(
         Difficulty.EASY -> WinGreen
         Difficulty.MEDIUM -> Color(0xFFFF9800)
         Difficulty.HARD -> LossRed
-    }
-
-    val diffLabel = when (uiState.difficulty) {
-        Difficulty.EASY -> "EASY"
-        Difficulty.MEDIUM -> "MEDIUM"
-        Difficulty.HARD -> "HARD"
     }
 
     val scaleIn = remember { Animatable(0.85f) }
@@ -170,7 +163,7 @@ fun SessionResultScreen(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = diffLabel,
+                    text = uiState.difficulty.name,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.Serif,
@@ -215,7 +208,10 @@ fun SessionResultScreen(
             ) {
                 SessionButton(
                     text = "PLAY AGAIN",
-                    onClick = { viewModel.resetSession() },
+                    onClick = {
+                        viewModel.resetSession()
+                        onPlayAgain()
+                    },
                     modifier = Modifier.weight(1f)
                 )
                 SessionButton(
