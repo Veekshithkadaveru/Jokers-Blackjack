@@ -223,7 +223,7 @@ fun GameScreen(
                     val hitSource = remember { MutableInteractionSource() }
                     val isHitPressed by hitSource.collectIsPressedAsState()
                     val hitScale by animateFloatAsState(
-                        targetValue = if (isHitPressed) 0.91f else 1f,
+                        targetValue = if (isHitPressed) 0.95f else 1f,
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
                             stiffness = Spring.StiffnessMedium
@@ -242,7 +242,7 @@ fun GameScreen(
                     val standSource = remember { MutableInteractionSource() }
                     val isStandPressed by standSource.collectIsPressedAsState()
                     val standScale by animateFloatAsState(
-                        targetValue = if (isStandPressed) 0.91f else 1f,
+                        targetValue = if (isStandPressed) 0.95f else 1f,
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
                             stiffness = Spring.StiffnessMedium

@@ -40,10 +40,16 @@ fun HandDisplay(
     LaunchedEffect(isBust) {
         if (isBust && isRevealed) {
             repeat(3) {
-                offsetX.animateTo(14f, spring(stiffness = Spring.StiffnessHigh))
-                offsetX.animateTo(-14f, spring(stiffness = Spring.StiffnessHigh))
+                offsetX.animateTo(
+                    14f,
+                    spring(dampingRatio = 0.2f, stiffness = Spring.StiffnessMedium)
+                )
+                offsetX.animateTo(
+                    -14f,
+                    spring(dampingRatio = 0.2f, stiffness = Spring.StiffnessMedium)
+                )
             }
-            offsetX.animateTo(0f, spring(stiffness = Spring.StiffnessHigh))
+            offsetX.animateTo(0f, spring(dampingRatio = 0.2f, stiffness = Spring.StiffnessMedium))
         } else {
             offsetX.snapTo(0f)
         }
@@ -94,6 +100,7 @@ fun HandDisplay(
                 val upcardValue = cards[1].value
                 "Showing: $upcardValue"
             }
+
             isDealer && !isRevealed -> null
             isBlackjack -> "BLACKJACK!"
             isBust -> "Bust! ($total)"
