@@ -38,7 +38,7 @@ class DealerAI {
                     DealerAction.Stand
                 } else if (nextCard != null && dealerTotal + nextCard.value > 21) {
                     DealerAction.Stand
-                } else if (playerTotal <= 16) {
+                } else if (dealerTotal > playerTotal) {
                     DealerAction.Stand
                 } else {
                     DealerAction.Hit

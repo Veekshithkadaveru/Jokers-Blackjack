@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,13 +79,15 @@ fun HandDisplay(
         ) {
             cards.forEachIndexed { index, card ->
                 val cardRevealed = if (isDealer && index == 0) isRevealed else true
-                PlayingCard(
-                    card = card,
-                    isRevealed = cardRevealed,
-                    isBlackjack = isBlackjack && cardRevealed,
-                    modifier = Modifier.height(150.dp),
-                    backIndex = index
-                )
+                key(card) {
+                    PlayingCard(
+                        card = card,
+                        isRevealed = cardRevealed,
+                        isBlackjack = isBlackjack && cardRevealed,
+                        modifier = Modifier.height(150.dp),
+                        backIndex = index
+                    )
+                }
             }
         }
 
@@ -96,11 +99,7 @@ fun HandDisplay(
             else -> Color.White
         }
         val totalText = when {
-            isDealer && !isRevealed && cards.size >= 2 -> {
-                val upcardValue = cards[1].value
-                "Showing: $upcardValue"
-            }
-
+            isDealer && !isRevealed && cards.size >= 2 -> "?"
             isDealer && !isRevealed -> null
             isBlackjack -> "BLACKJACK!"
             isBust -> "Bust! ($total)"

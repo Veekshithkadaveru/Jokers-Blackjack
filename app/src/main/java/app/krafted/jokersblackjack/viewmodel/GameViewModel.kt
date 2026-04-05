@@ -99,21 +99,32 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val state = _uiState.value
         if (state.gamePhase != GamePhase.PLAYER_TURN) return
 
+        // Lock buttons immediately to prevent double-tap race condition
+        _uiState.update { it.copy(gamePhase = GamePhase.DEALING) }
+
         val newPlayerHand = engine.playerHit(state.deck, state.playerHand)
         val newPlayerTotal = handTotal(newPlayerHand)
         val quote = quoteRepository.getRandomQuote("player_hit")
 
-        _uiState.update {
-            it.copy(
-                playerHand = newPlayerHand,
-                playerTotal = newPlayerTotal,
-                jokerQuote = quote
-            )
-        }
-
         if (engine.checkBust(newPlayerHand)) {
+            _uiState.update {
+                it.copy(
+                    playerHand = newPlayerHand,
+                    playerTotal = newPlayerTotal,
+                    jokerQuote = quote
+                )
+            }
             viewModelScope.launch {
                 completeHand(HandResult.BUST, newPlayerHand, state.dealerHand)
+            }
+        } else {
+            _uiState.update {
+                it.copy(
+                    playerHand = newPlayerHand,
+                    playerTotal = newPlayerTotal,
+                    jokerQuote = quote,
+                    gamePhase = GamePhase.PLAYER_TURN
+                )
             }
         }
     }
@@ -136,6 +147,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun runDealerTurn() {
         viewModelScope.launch {
+            val dealerTurnQuote = quoteRepository.getRandomQuote("dealer_turn")
+            _uiState.update { it.copy(jokerQuote = dealerTurnQuote) }
+
             val state = _uiState.value
             var currentDealerHand = state.dealerHand.toList()
             var currentDeck = state.deck.toMutableList()
@@ -254,14 +268,12 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             val currentBest = state.bestScores[state.difficulty] ?: 0
             val isNewBest = state.sessionScore > currentBest
 
-            if (isNewBest) {
-                dao.insertSession(
-                    SessionRecord(
-                        difficulty = state.difficulty.name,
-                        score = state.sessionScore
-                    )
+            dao.insertSession(
+                SessionRecord(
+                    difficulty = state.difficulty.name,
+                    score = state.sessionScore
                 )
-            }
+            )
 
             val eventKey =
                 if (state.sessionScore > 5) "session_complete_win" else "session_complete_loss"
@@ -283,6 +295,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         sessionStarted = false
         val currentDifficulty = _uiState.value.difficulty
         startSession(currentDifficulty)
+    }
+
+    fun clearSession() {
+        sessionStarted = false
     }
 
     fun getBestScore(difficulty: Difficulty): Int {

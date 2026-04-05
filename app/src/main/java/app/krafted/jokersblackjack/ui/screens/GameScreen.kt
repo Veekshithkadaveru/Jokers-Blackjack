@@ -100,9 +100,8 @@ fun GameScreen(
         viewModel.startSession(diff)
     }
 
-    // Navigate when session completes (after completeSession finishes)
-    LaunchedEffect(uiState.isSessionComplete) {
-        if (uiState.isSessionComplete) {
+    LaunchedEffect(uiState.isSessionComplete, uiState.sessionResults.size) {
+        if (uiState.isSessionComplete && uiState.sessionResults.size == 5) {
             onNavigateToSessionResult()
         }
     }
@@ -263,7 +262,7 @@ fun GameScreen(
 
         if (showOverlay) {
             HandResultOverlay(
-                result = uiState.handResult!!,
+                result = uiState.handResult ?: HandResult.DRAW,
                 playerHand = uiState.playerHand,
                 dealerHand = uiState.dealerHand,
                 jokerQuote = uiState.jokerQuote,

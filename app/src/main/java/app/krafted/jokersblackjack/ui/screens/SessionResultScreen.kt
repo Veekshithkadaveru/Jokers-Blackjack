@@ -216,7 +216,10 @@ fun SessionResultScreen(
                 )
                 SessionButton(
                     text = "HOME",
-                    onClick = onNavigateHome,
+                    onClick = {
+                        viewModel.clearSession()
+                        onNavigateHome()
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }

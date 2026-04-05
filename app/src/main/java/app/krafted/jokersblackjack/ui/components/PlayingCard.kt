@@ -40,10 +40,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -139,8 +139,8 @@ fun PlayingCard(
     backIndex: Int = 0,
     isBlackjack: Boolean = false
 ) {
-    val flipProgress = remember { Animatable(if (isRevealed) 1f else 0f) }
-    var showingBack by remember { mutableStateOf(!isRevealed) }
+    val flipProgress = remember { Animatable(0f) }
+    var showingBack by remember { mutableStateOf(true) }
 
     val slideY = remember { Animatable(-800f) }
     LaunchedEffect(Unit) {
@@ -297,7 +297,14 @@ private fun CardFace(card: Card) {
                 modifier = Modifier
                     .align(Alignment.Center)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Brush.radialGradient(listOf(color.copy(alpha = 0.15f), Color.Transparent)))
+                    .background(
+                        Brush.radialGradient(
+                            listOf(
+                                color.copy(alpha = 0.15f),
+                                Color.Transparent
+                            )
+                        )
+                    )
                     .border(1.dp, color.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
                     .padding(horizontal = 14.dp, vertical = 18.dp)
             ) {

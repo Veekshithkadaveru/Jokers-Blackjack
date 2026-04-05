@@ -68,7 +68,9 @@ class MainActivity : ComponentActivity() {
                             GameScreen(
                                 difficulty = difficulty,
                                 onNavigateToSessionResult = {
-                                    navController.navigate(Screen.sessionResultRoute(difficulty))
+                                    navController.navigate(Screen.sessionResultRoute(difficulty)) {
+                                        popUpTo(Screen.gameRoute(difficulty)) { inclusive = true }
+                                    }
                                 }
                             )
                         }
