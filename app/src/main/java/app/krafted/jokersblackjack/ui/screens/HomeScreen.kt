@@ -57,6 +57,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.krafted.jokersblackjack.R
@@ -68,6 +69,72 @@ import app.krafted.jokersblackjack.ui.theme.OrangeAccent
 import app.krafted.jokersblackjack.ui.theme.WinGreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+@Composable
+fun AnimatedJokerLogo(
+    modifier: Modifier = Modifier,
+    iconWidth: Dp = 140.dp,
+    iconHeight: Dp = 180.dp,
+    glowSize: Dp = 120.dp,
+    iconScale: Float = 1f,
+    iconAlpha: Float = 1f
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "logo")
+    val logoHover by infiniteTransition.animateFloat(
+        initialValue = -4f,
+        targetValue = 4f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2800, easing = EaseInOutCubic),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "hover"
+    )
+    val logoTilt by infiniteTransition.animateFloat(
+        initialValue = -3f,
+        targetValue = 3f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(3500, easing = EaseInOutCubic),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "tilt"
+    )
+
+    Box(
+        modifier = modifier
+            .height(iconHeight)
+            .width(iconWidth)
+            .graphicsLayer {
+                scaleX = iconScale
+                scaleY = iconScale
+                alpha = iconAlpha
+                translationY = logoHover
+                rotationZ = logoTilt
+                shadowElevation = 35f
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(glowSize)
+                .graphicsLayer { alpha = iconAlpha * 0.5f }
+                .blur(28.dp)
+                .background(GoldAccent.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
+        )
+        Image(
+            painter = painterResource(id = R.drawable.card_back_joker),
+            contentDescription = "Joker Icon",
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(6.dp))
+                .border(
+                    2.dp,
+                    GoldAccent.copy(alpha = 0.8f),
+                    RoundedCornerShape(6.dp)
+                ),
+            contentScale = ContentScale.Crop
+        )
+    }
+}
 
 @Composable
 fun HomeScreen(
@@ -192,63 +259,10 @@ fun HomeScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                val infiniteTransition = rememberInfiniteTransition(label = "logo")
-                val logoHover by infiniteTransition.animateFloat(
-                    initialValue = -4f,
-                    targetValue = 4f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(2800, easing = EaseInOutCubic),
-                        repeatMode = RepeatMode.Reverse
-                    ),
-                    label = "hover"
+                AnimatedJokerLogo(
+                    iconScale = iconScale.value,
+                    iconAlpha = iconAlpha.value
                 )
-                val logoTilt by infiniteTransition.animateFloat(
-                    initialValue = -3f,
-                    targetValue = 3f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(3500, easing = EaseInOutCubic),
-                        repeatMode = RepeatMode.Reverse
-                    ),
-                    label = "tilt"
-                )
-
-                Box(
-                    modifier = Modifier
-                        .height(180.dp)
-                        .width(140.dp)
-                        .graphicsLayer {
-                            scaleX = iconScale.value
-                            scaleY = iconScale.value
-                            alpha = iconAlpha.value
-                            translationY = logoHover
-                            rotationZ = logoTilt
-                            shadowElevation = 35f
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-
-                    Box(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .graphicsLayer { alpha = iconAlpha.value * 0.5f }
-                            .blur(28.dp)
-                            .background(GoldAccent.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.card_back_joker),
-                        contentDescription = "Joker Icon",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(6.dp))
-                            .border(
-                                2.dp,
-                                GoldAccent.copy(alpha = 0.8f),
-                                RoundedCornerShape(6.dp)
-                            ),
-                        contentScale = ContentScale.Crop
-                    )
-                }
 
                 Spacer(Modifier.height(8.dp))
 
